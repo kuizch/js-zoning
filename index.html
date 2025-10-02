@@ -1,82 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>ArcGIS JS SDK Example</title>
-  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <!-- ArcGIS CSS -->
-  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css" />
-  <!-- ArcGIS JS -->
-  <script src="https://js.arcgis.com/4.33/"></script>
-  <style>
-    html, body, #viewDiv {
-      padding: 0;
-      margin: 0;
-      height: 100%;
-      width: 100%;
-    }
-  </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Manitoba Zoning</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <!-- ArcGIS CSS -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css">
+    <!-- ArcGIS JS -->
+    <script src="https://js.arcgis.com/4.33"></script>
+    <style>
+        html,
+        body {
+            font-size: 150%;
+            margin: 10vh 10vw;
+        }
+
+        button {
+            position: absolute;
+            left: 5px;
+            z-index: 20;
+        }
+
+        #sign-in {
+            top: 5px;
+        }
+
+        #sign-out {
+            top: 30px;
+        }
+    </style>
+    <script>
+        require([
+            "esri/identity/OAuthInfo",
+            "esri/identity/IdentityManager",
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/FeatureLayer"
+        ], function (OAuthInfo, esriId, Map, MapView, FeatureLayer) {
+
+            // Step 1: Set up OAuth
+            const info = new OAuthInfo({
+                appId: "XOELER6WxG1d7BS1", // 🔁 Replace with your actual Client ID from ArcGIS Online
+                //popup: true,
+                //portalUrl: "https://www.arcgis.com"
+            });
+
+            esriId.registerOAuthInfos([info]);
+
+            // Step 2: Check sign-in status
+            esriId.registerOAuthInfos([info]);
+            esriId
+                .checkSignInStatus(info.portalUrl + "/sharing")
+                .then(() => {
+                    handleSignedIn();
+                })
+                .catch(() => {
+                    handleSignedOut();
+                });
+
+            document.getElementById("sign-in").addEventListener("click", function () {
+                esriID.getCredential(info.portalUrl + "/sharing");
+            });
+
+            document.getElementById("sign-out").addEventListener("click", function () {
+                esriID.destroyCredentials();
+                window.location.reload();
+            });
+            let map;
+
+            function handleSignedIn() {
+
+                map = new Map({
+                    basemap: "arcgis/topographic"
+                });
+                const view = new MapView({
+                    map: map,
+                    center: [-97.1384, 49.8951], // Winnipeg
+                    container: "viewDiv",
+                    zoom: 10
+                });
+
+                const featureLayer = new FeatureLayer({
+                    url: "https://services.arcgis.com/mMUesHYPkXjaFGfS/arcgis/rest/services/Manitoba_Zoning_By_Laws/FeatureServer/0"
+                });
+
+                map.add(featureLayer);
+            }
+
+            function handleSignedOut() {
+                map.destroy();
+            }
+
+        });
+     </script>
 </head>
 <body>
-  <div id="viewDiv"></div>
-
-  <script>
-      require([
-          "esri/identity/OAuthInfo",
-          "esri/identity/IdentityManager",
-          "esri/portal/Portal",
-          "esri/Map",
-          "esri/views/MapView",
-          "esri/layers/FeatureLayer"
-      ], function (OAuthInfo, esriId, Portal, Map, MapView, FeatureLayer) {
-
-          // Step 1: Set up OAuth
-          const info = new OAuthInfo({
-              appId: "XOELER6WxG1d7BS1", // 🔁 Replace with your actual Client ID from ArcGIS Online
-              popup: true,
-              portalUrl: "https://www.arcgis.com"
-          });
-
-          esriId.registerOAuthInfos([info]);
-
-          // Step 2: Check sign-in status
-          esriId.checkSignInStatus(info.portalUrl).then(() => {
-              console.log("User is already signed in");
-              initializeMap();
-          }).catch(() => {
-              esriId.signIn(info.portalUrl).then(() => {
-                  console.log("User signed in");
-                  initializeMap();
-              });
-          });
-
-          // Step 3: Initialize map after authentication
-          function initializeMap() {
-              const map = new Map({
-                  basemap: "topo-vector"
-              });
-
-              const view = new MapView({
-                  container: "viewDiv",
-                  map: map,
-                  center: [-97.1384, 49.8951], // Winnipeg
-                  zoom: 10
-              });
-
-              const featureLayer = new FeatureLayer({
-                  url: "https://services.arcgis.com/mMUesHYPkXjaFGfS/arcgis/rest/services/Manitoba_Zoning_By_Laws/FeatureServer/0"
-              });
-
-              map.add(featureLayer);
-
-              // Optional: Load portal info
-              const portal = new Portal();
-              portal.load().then(() => {
-                  console.log("Portal loaded:", portal.user);
-              });
-          }
-      });
-
-  </script>
+    <button id="sign-in" class="btn btn-primary">Sign In</button>
+    <button id="sign-out" class="btn btn-primary">Sign Out</button>
+    <div id="viewDiv"></div>
 </body>
 </html>
