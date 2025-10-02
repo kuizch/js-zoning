@@ -45,8 +45,6 @@
                 //portalUrl: "https://www.arcgis.com"
             });
 
-            esriId.registerOAuthInfos([info]);
-
             // Step 2: Check sign-in status
             esriId.registerOAuthInfos([info]);
             esriId
@@ -59,11 +57,11 @@
                 });
 
             document.getElementById("sign-in").addEventListener("click", function () {
-                esriID.getCredential(info.portalUrl + "/sharing");
+                esriId.getCredential(info.portalUrl + "/sharing");
             });
 
             document.getElementById("sign-out").addEventListener("click", function () {
-                esriID.destroyCredentials();
+                esriId.destroyCredentials();
                 window.location.reload();
             });
             let map;
