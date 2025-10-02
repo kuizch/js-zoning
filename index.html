@@ -53,8 +53,8 @@
             // --- OAuth setup ---
             const info = new OAuthInfo({
                 appId: "dSrIbXNY8sp0Rhjw", // <-- put your Client ID here
-                // portalUrl: "https://www.arcgis.com", // optional; defaults to ArcGIS Online
-                popup: true // use popup-based OAuth (recommended for simple apps)
+                portalUrl: "https://www.arcgis.com", // optional; defaults to ArcGIS Online
+                popup: false 
             });
 
             esriId.registerOAuthInfos([info]);
@@ -117,4 +117,5 @@
     </div>
 </body>
 </html>
+
 
